@@ -12,15 +12,15 @@ public class KnnMain {
     private static final Logger log = Logger.getLogger(KnnMain.class.getName());
 
     public static void main(String[] args) {
-
-        final String []columnNamesIris = {"(H) sépala", "(L) sépala", "(H) pétula", "(L) pétula", "rótulo"};
         final int numK = 30;
-
-        //Chave
         boolean isIris = true;
 
         if (isIris) {
-         
+            IrisConverter converter = new IrisConverter();
+            List<Register> train = converter.trainConverter();
+            List<Register> test = converter.testConverter();
+
+            SwingUtilities.invokeLater(() -> createAndShowGUI(train, test, numK));
         }
     }
     
@@ -72,24 +72,20 @@ public class KnnMain {
             }
         };
         
-        // Preencher dados simulados (você implementará o cálculo real)
         KnnImp knn = new KnnImp();
         for (int k = 2; k <= maxK; k++) {
             Object[] row = KnnImp.calculateMetricsForK(k, metricName, trainData, testData, knn);
             tableModel.addRow(row);
         }
         
-        // Criar JTable
         JTable table = new JTable(tableModel);
         table.setRowHeight(25);
         table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 12));
         table.setFont(new Font("Arial", Font.PLAIN, 11));
         
-        // Adicionar scroll
         JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane, BorderLayout.CENTER);
         
-        // Painel de informações adicionais
         JPanel infoPanel = new JPanel(new GridLayout(3, 1, 5, 5));
         infoPanel.setBorder(BorderFactory.createTitledBorder("Informações do Dataset"));
         infoPanel.add(new JLabel("Total de registros de treino: " + trainData.size()));
