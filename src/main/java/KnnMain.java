@@ -11,7 +11,7 @@ public class KnnMain {
 
     private static final Logger log = Logger.getLogger(KnnMain.class.getName());
 
-    private static Object[][] averageMatrix = new Object[29][4];
+    private static Object[][] averageMatrix = new Object[29][5];
 
     public static void main(String[] args) {
         final int numK = 30;
@@ -66,12 +66,11 @@ public class KnnMain {
         };
 
         for (int i = 0; i < averageMatrix.length; i++) {
-            Object[] row = new Object[5];
-            row[0] = i + 1;              // Valor de K (começa em 2)
-            row[1] = averageMatrix[i][0]; // Manhattan
-            row[2] = averageMatrix[i][1]; // Euclidiana
-            row[3] = averageMatrix[i][2]; // Minkowski
-            row[4] = averageMatrix[i][3]; // Mahalanobis
+            Object[] row = new Object[4];
+            row[0] = averageMatrix[i][0]; // Manhattan
+            row[1] = averageMatrix[i][1]; // Euclidiana
+            row[2] = averageMatrix[i][2]; // Minkowski
+            row[3] = averageMatrix[i][3]; // Mahalanobis
             tableModel.addRow(row);
         }
 
