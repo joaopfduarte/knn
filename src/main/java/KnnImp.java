@@ -135,7 +135,7 @@ public class KnnImp {
         }
         double precision = numClasses > 0 ? precisionSum / numClasses : 0.0;
         double recall = numClasses > 0 ? recallSum / numClasses : 0.0;
-        double f1Score = (precision + recall) > 0 ? 2.0 * (precision * recall) / (precision + recall) : 0.0;
+        double averagef1Score = (precision + recall) > 0 ? 2.0 * (precision * recall) / (precision + recall) : 0.0;
 
         long executionTime = System.currentTimeMillis() - startTime;
 
@@ -144,9 +144,9 @@ public class KnnImp {
                 String.format("%.2f", accuracy),
                 String.format("%.4f", precision),
                 String.format("%.4f", recall),
-                String.format("%.4f", f1Score),
+                String.format("%.4f", averagef1Score),
                 executionTime,
-                errors
+                errors,
         };
     }
 

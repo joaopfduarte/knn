@@ -11,6 +11,8 @@ public class KnnMain {
 
     private static final Logger log = Logger.getLogger(KnnMain.class.getName());
 
+    private static Object[][] averageMatrix = new Object[29][4];
+
     public static void main(String[] args) {
         final int numK = 30;
         boolean isIris = true;
@@ -34,17 +36,58 @@ public class KnnMain {
         JTabbedPane tabbedPane = new JTabbedPane();
         
         // Adicionar uma aba para cada métrica de distância
-        tabbedPane.addTab("Manhattan", createResultPanel("Manhattan", trainData, testData, maxK));
-        tabbedPane.addTab("Euclidiana", createResultPanel("Euclidiana", trainData, testData, maxK));
-        tabbedPane.addTab("Minkowski (p=3)", createResultPanel("Minkowski", trainData, testData, maxK));
-        tabbedPane.addTab("Mahalanobis", createResultPanel("Mahalanobis", trainData, testData, maxK));
+        tabbedPane.addTab("Manhattan", createResultPanel("Manhattan", trainData, testData, maxK, 0));
+        tabbedPane.addTab("Euclidiana", createResultPanel("Euclidiana", trainData, testData, maxK, 1));
+        tabbedPane.addTab("Minkowski (p=3)", createResultPanel("Minkowski", trainData, testData, maxK, 2));
+        tabbedPane.addTab("Mahalanobis", createResultPanel("Mahalanobis", trainData, testData, maxK, 3));
+
+        log.info("Criação da tabela de médias");
+        tabbedPane.addTab("Médias", createAveragePanel());
         
         frame.add(tabbedPane);
         frame.setVisible(true);
     }
+
+    private static JPanel createAveragePanel() {
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+
+        String[] columnNames = {
+                "Manhattan",
+                "Euclidiana",
+                "Minkowski",
+                "Mahalanobis"
+        };
+
+        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Tornar células não editáveis
+            }
+        };
+
+        for (int i = 0; i < averageMatrix.length; i++) {
+            Object[] row = new Object[5];
+            row[0] = i + 1;              // Valor de K (começa em 2)
+            row[1] = averageMatrix[i][0]; // Manhattan
+            row[2] = averageMatrix[i][1]; // Euclidiana
+            row[3] = averageMatrix[i][2]; // Minkowski
+            row[4] = averageMatrix[i][3]; // Mahalanobis
+            tableModel.addRow(row);
+        }
+
+        JTable table = new JTable(tableModel);
+        table.setRowHeight(25);
+        table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 12));
+        table.setFont(new Font("Arial", Font.PLAIN, 11));
+
+        JScrollPane scrollPane = new JScrollPane(table);
+        panel.add(scrollPane, BorderLayout.CENTER);
+
+        return panel;
+    }
     
     private static JPanel createResultPanel(String metricName, List<Register> trainData, 
-                                           List<Register> testData, int maxK) {
+                                           List<Register> testData, int maxK, int metricIndex) {
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
@@ -59,7 +102,7 @@ public class KnnMain {
             "Acurácia (%)", 
             "Precisão", 
             "Recall", 
-            "F1-Score",
+            "Average-F1-Score",
             "Tempo (ms)",
             "Erros"
         };
@@ -73,9 +116,12 @@ public class KnnMain {
         };
         
         KnnImp knn = new KnnImp();
+        int i = 0;
         for (int k = 2; k <= maxK; k++) {
             Object[] row = KnnImp.calculateMetricsForK(k, metricName, trainData, testData, knn);
+            averageMatrix[i][metricIndex] = row[4];
             tableModel.addRow(row);
+            i++;
         }
         
         JTable table = new JTable(tableModel);
